@@ -15,8 +15,14 @@ resource "aws_autoscaling_group" "zdd" {
   target_group_arns = [aws_lb_target_group.asg.arn]
   health_check_type    = "ELB"
 
+  min_elb_capacity = var.min_size
+
   min_size = var.min_size
   max_size = var.max_size
+
+  lifecycle {
+    create_before_destroy = true
+  }
 
   # Use instance refresh to roll out changes to the ASG
   instance_refresh {
