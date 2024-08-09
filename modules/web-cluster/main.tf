@@ -2,13 +2,14 @@ resource "aws_launch_configuration" "zdd" {
   image_id      = var.ami
   instance_type = var.instance_type
   security_groups = [aws_security_group.instance.id]
+  user_data = file("${path.module}/user-data.sh")
   lifecycle {
     create_before_destroy = true
   }
 }
 
 resource "aws_autoscaling_group" "zdd" {
-  name = "${var.cluster_name}-${aws_launch_configuration.zdd.name}"
+  name                 = "${var.cluster_name}-${aws_launch_configuration.zdd.name}"
   launch_configuration = aws_launch_configuration.zdd.name
   vpc_zone_identifier  = var.subnets
   target_group_arns = [aws_lb_target_group.asg.arn]
@@ -81,7 +82,7 @@ resource "aws_lb_target_group" "asg" {
     protocol            = "HTTP"
     matcher             = "200"
     interval            = 15
-    timeout             = 3
+    timeout             = 5
     healthy_threshold   = 2
     unhealthy_threshold = 2
   }
