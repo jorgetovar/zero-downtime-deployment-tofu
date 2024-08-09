@@ -8,9 +8,9 @@ resource "aws_launch_configuration" "zdd" {
 }
 
 resource "aws_autoscaling_group" "zdd" {
-  name                 = var.cluster_name
+  name = "${var.cluster_name}-${aws_launch_configuration.zdd.name}"
   launch_configuration = aws_launch_configuration.zdd.name
-  vpc_zone_identifier  = data.aws_subnets.default.ids
+  vpc_zone_identifier  = var.subnets
   target_group_arns = [aws_lb_target_group.asg.arn]
   health_check_type    = "ELB"
 
@@ -46,21 +46,11 @@ resource "aws_security_group_rule" "allow_server_http_inbound" {
   cidr_blocks       = local.all_ips
 }
 
-data "aws_vpc" "default" {
-  default = true
-}
-
-data "aws_subnets" "default" {
-  filter {
-    name = "vpc-id"
-    values = [data.aws_vpc.default.id]
-  }
-}
 
 resource "aws_lb" "zdd" {
   name               = var.cluster_name
   load_balancer_type = "application"
-  subnets            = data.aws_subnets.default.ids
+  subnets            = var.subnets
   security_groups = [aws_security_group.alb.id]
 }
 
@@ -84,7 +74,7 @@ resource "aws_lb_target_group" "asg" {
   name     = var.cluster_name
   port     = var.server_port
   protocol = "HTTP"
-  vpc_id   = data.aws_vpc.default.id
+  vpc_id   = var.vpc_id
 
   health_check {
     path                = "/"

@@ -7,6 +7,16 @@ variable "ami" {
   type        = string
 }
 
+variable "subnets" {
+  description = "The subnets to use for the cluster"
+  type = list(string)
+}
+
+variable "vpc_id" {
+  description = "The VPC to use for the cluster"
+  type        = string
+}
+
 variable "instance_type" {
   description = "The type of EC2 Instances to run (e.g. t2.micro)"
   type        = string
