@@ -1,19 +1,21 @@
-resource "aws_launch_configuration" "zdd" {
+resource "aws_launch_template" "zdd" {
+  name_prefix   = "zdd-"
   image_id      = var.ami
   instance_type = var.instance_type
-  security_groups = [aws_security_group.instance.id]
-  user_data = file("${path.module}/user-data.sh")
+  vpc_security_group_ids = [aws_security_group.instance.id]
+  user_data = base64encode(file("${path.module}/user-data.sh"))
   lifecycle {
     create_before_destroy = true
   }
 }
 
+
 resource "aws_autoscaling_group" "zdd" {
-  name                 = "${var.cluster_name}-${aws_launch_configuration.zdd.name}"
-  launch_configuration = aws_launch_configuration.zdd.name
-  vpc_zone_identifier  = var.subnets
+
+  name                = "${var.cluster_name}-${aws_launch_template.zdd.name}"
+  vpc_zone_identifier = var.subnets
   target_group_arns = [aws_lb_target_group.asg.arn]
-  health_check_type    = "ELB"
+  health_check_type   = "ELB"
 
   min_elb_capacity = var.min_size
 
@@ -30,6 +32,11 @@ resource "aws_autoscaling_group" "zdd" {
     preferences {
       min_healthy_percentage = 50
     }
+  }
+
+  launch_template {
+    id      = aws_launch_template.zdd.id
+    version = "$Latest"
   }
 
   tag {
