@@ -1,6 +1,7 @@
 # zero-downtime-deployment-tofu
 
-I still remember the days when we had to set flags and display a maintenance page during application deployments. Often, we deployed our applications at midnight or during periods of low traffic to minimize the impact on users, which led to a poor developer experience. Now, **I expect a seamless user experience at all times**.
+I still remember the days when we had to set flags and display a maintenance page during application deployments. Often, we deployed our applications at midnight or during periods of low traffic to minimize the impact on users, which led to a poor developer experience. **Nowadays, as clients, we expect a seamless user experience at all times**.
+
 
 ## Why Zero-Downtime Deployment
 
